@@ -22,7 +22,7 @@ const verifyToken = (req, res, next) => {
 
 const verifyUser = (req, res, next) => {
 
-  //avoid 'next' so that other /routes/users fxn will nt run, since verifyToken() also has a return
+  //avoid 'next' so that other /routes/users fxn will nt run, since verifyToken() also has a next()
   verifyToken(req, res, () => {
     
     //check 'token user id' against param. OR check 'if token user isAdmin' is true
