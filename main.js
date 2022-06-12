@@ -10,6 +10,8 @@ const parcelsRoute = require("./routes/parcels");
 const conveysRoute = require("./routes/conveys");
 const sendPackagesRoute = require("./routes/sendPackages");
 const receivePackagesRoute = require("./routes/receivePackages");
+const packageSummaryRoute = require("./routes/packageSummaries");
+const payoutSummaryRoute = require("./routes/payoutSummaries");
 
 
 //making our appln an object
@@ -29,6 +31,8 @@ app.use("/api/parcels", parcelsRoute);
 app.use("/api/conveys", conveysRoute);
 app.use("/api/sendPackages", sendPackagesRoute);
 app.use("/api/receivePackages", receivePackagesRoute);
+app.use("/api/packageSummaries", packageSummaryRoute);
+app.use("/api/payoutSummaries", payoutSummaryRoute);
 
 
 //set port, mongoose db
