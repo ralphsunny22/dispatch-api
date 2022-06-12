@@ -2,6 +2,7 @@ const express = require("express");
 const {
   creditWallet,
   debitWallet,
+  currentWallet,
   //createWallet,
   updateWallet,
   deleteWallet,
@@ -17,6 +18,9 @@ router.post("/credit", verifyToken, creditWallet);
 
 //DEBIT
 router.post("/debit", verifyToken, debitWallet);
+
+//CURRENT WALLET
+router.get("/current", verifyToken, currentWallet);
 
 //CREATE
 //router.post("/", verifyToken, createWallet);

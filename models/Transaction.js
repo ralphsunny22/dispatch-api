@@ -1,13 +1,17 @@
 const mongoose = require("mongoose");
 //model setup
-const walletSchema = new mongoose.Schema(
+const transactionSchema = new mongoose.Schema(
   {
-    //amt coming or leaving the wallet
-    amountTransacted: { 
-      type: Number, 
-      min: 0,
-      default: 0, 
+    //wallet, card, cash, on-delivery
+    paymentMethod: { 
+      type: String,  
     },
+
+    amountTransacted: { 
+        type: Number, 
+        min: 0,
+        default: 0, 
+      },
 
     ///credit or debit
     transactionType: { 
@@ -15,22 +19,12 @@ const walletSchema = new mongoose.Schema(
         default:"" 
     },
 
-    transactionDescription: { 
+    description: { 
         type: String, //credited via paystack
         default:"" 
     },
 
-    currentBalance: { 
-        type: Number, 
-        default: 0, 
-    },
-
     orderId: { 
-        type: String, //if debited after placing order 
-        default:"" 
-    },
-
-    transactionId: { 
         type: String, //if debited after placing order 
         default:"" 
     },
@@ -50,6 +44,6 @@ const walletSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Wallet = mongoose.model("Wallet", walletSchema);
-module.exports = Wallet;
+const Transaction = mongoose.model("Transaction", transactionSchema);
+module.exports = Transaction;
 

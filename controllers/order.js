@@ -7,6 +7,8 @@ const PayoutSummary = require("../models/PayoutSummary");
 const ReceivePackage = require("../models/ReceivePackage");
 const User = require("../models/User");
 const SendPackage = require("../models/SendPacakage");
+const Wallet = require("../models/Wallet");
+const Transaction = require("../models/Transaction");
 
 const createOrder = async (req, res, next) => {
     const userId = req.userTokenInfo.id;
@@ -17,11 +19,22 @@ const createOrder = async (req, res, next) => {
       }
     
     //validate trackId
-    const packageSummary = await PackageSummary.findOne({ trackId: randomTrackId });
-    if (!packageSummary) return next(createError(404, "Something went wrong!"));
-
     const payoutSummary = await PayoutSummary.findOne({ trackId: randomTrackId });
     if (!payoutSummary) return next(createError(404, "Something went wrong!"));
+
+    //amount
+    const amount = payoutSummary.totalCost
+    const paymentMethod = payoutSummary.paymentMethod;
+
+    //check wallet to store transaction
+    const lastRecord = await Wallet.find({ userId:userId }).sort({ _id:-1 }).limit(1);
+    if (!lastRecord) return next(createError(404, "User does not have wallet"));
+
+    const currentBalance = lastRecord[0].currentBalance;
+    if (paymentMethod == "wallet" && currentBalance < amount) return next(createError(404, "Wallet Insufficient Fund"));
+    
+    const packageSummary = await PackageSummary.findOne({ trackId: randomTrackId });
+    if (!packageSummary) return next(createError(404, "Something went wrong!"));
 
     const user = await User.findOne({ trackId: randomTrackId });
     if (!user) return next(createError(404, "Something went wrong!"));
@@ -29,8 +42,7 @@ const createOrder = async (req, res, next) => {
     const parcel = await Parcel.findOne({ trackId: randomTrackId });
     if (!parcel) return next(createError(404, "Something went wrong!"));
 
-    //amount
-    const amount = payoutSummary.totalCost
+    
 
     //sender
     const receivePackage = await ReceivePackage.findOne({ trackId: randomTrackId });
@@ -61,7 +73,6 @@ const createOrder = async (req, res, next) => {
     const tripMode = payoutSummary.tripMode;
     const transitMeans = payoutSummary.transitMeans;
     const isInsured = payoutSummary.isInsured;
-    const paymentMethod = payoutSummary.paymentMethod;
     
     //estimated cost
     const estimated_cost = packageSummary.estimated_cost;
@@ -87,6 +98,32 @@ const createOrder = async (req, res, next) => {
 
     try {
     const orderObj = await newOrder.save();
+
+    //create new transaction
+    const newTransaction = new Transaction({
+      paymentMethod: paymentMethod,
+      amountTransacted: amount,
+      transactionType: "Debit",
+      description: "Debit via "+ paymentMethod,
+      orderId: orderObj._id,
+      userId: userId,
+   })
+   const transactionObj = await newTransaction.save();
+
+    if (paymentMethod == "wallet") {
+      const newWallet = new Wallet({
+        amountTransacted: amount,
+        transactionType: "debit",
+        transactionDescription: "Debit wallet transaction",
+        currentBalance: currentBalance - amount,
+        transactionId: transactionObj._id,
+        orderId: orderObj._id,
+        userId: userId,
+     })
+     const walletObj = await newWallet.save();
+    }
+
+
     res.status(200).json({ orderObj });
     
     } catch (err) {

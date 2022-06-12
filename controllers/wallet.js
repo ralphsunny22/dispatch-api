@@ -1,3 +1,4 @@
+const Transaction = require("../models/Transaction");
 const Wallet = require("../models/Wallet");
 const createError = require("../utils/error");
 
@@ -47,12 +48,25 @@ const debitWallet = async (req,res,next)=>{
 
     //return res.send({currentBalance})
     const newCurrentBalance = currentBalance - amountTransacted;
+
+    //create new transaction
+    const newTransaction = new Transaction({
+      paymentMethod: "wallet",
+      amountTransacted: amountTransacted,
+      transactionType: "Debit",
+      description: "Debit via wallet",
+      // orderId: orderObj._id,
+      userId: userId,
+   })
+   const transactionObj = await newTransaction.save();
     
     const newWallet = new Wallet({
         amountTransacted: amountTransacted,
         transactionType: "debit",
         transactionDescription: "Debit wallet transaction",
         currentBalance: newCurrentBalance,
+        transactionId: transactionObj._id,
+        // orderId: orderObj._id,
         userId: userId,
     })
 
@@ -63,6 +77,22 @@ const debitWallet = async (req,res,next)=>{
         } catch (err) {
         next(err);
         }
+}
+
+//current wallet
+const currentWallet = async (req,res,next)=>{
+  const userId = req.userTokenInfo.id;
+
+  try {
+    const lastRecord = await Wallet.find({ userId:userId }).sort({ _id:-1 }).limit(1);
+    if (!lastRecord) return next(createError(404, "User does not have wallet"));
+    
+    const walletObj = lastRecord[0];
+      res.status(200).json({ walletObj });
+      
+      } catch (err) {
+      next(err);
+      }
 }
 
 const updateWallet = async (req,res,next)=>{
@@ -104,4 +134,4 @@ const getWallets = async (req,res,next)=>{
   }
 }
 
-module.exports = { creditWallet, debitWallet, updateWallet, deleteWallet, getWallet, getWallets }
+module.exports = { creditWallet, debitWallet, currentWallet, updateWallet, deleteWallet, getWallet, getWallets }
