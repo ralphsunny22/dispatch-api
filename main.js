@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const authRoute = require("./routes/auth");
 const usersRoute = require("./routes/users");
 const parcelsRoute = require("./routes/parcels");
+const conveysRoute = require("./routes/conveys");
 
 
 //making our appln an object
@@ -23,6 +24,7 @@ app.use(express.json());
 app.use("/api/auth", authRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/parcels", parcelsRoute);
+app.use("/api/conveys", conveysRoute);
 
 //set port, mongoose db
 const port = process.env.PORT || 5000

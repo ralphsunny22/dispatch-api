@@ -11,7 +11,7 @@ const { verifyAdmin, verifyToken, verifyUser } = require("../utils/verifyToken.j
 const router = express.Router();
 
 //CREATE
-router.post("/:userId", verifyUser, createParcel);
+router.post("/", verifyToken, createParcel);
 
 //UPDATE
 router.put("/:id", verifyAdmin, updateParcel);

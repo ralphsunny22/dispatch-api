@@ -2,15 +2,17 @@ const Parcel = require("../models/Parcel");
 const { randomUUID } = require('crypto');
 
 const createParcel = async (req, res, next) => {
-    const userId = req.params.userId;
-    const newParcel = new Parcel(req.body);
-
+    const userId = req.userTokenInfo.id; //from verifyToken.js
+    /// return res.send(userId);
     const randomTrackId = randomUUID();
+
+    //create new
+    const newParcel = new Parcel(req.body);
 
     //add to array
     newParcel.userId = userId;
     newParcel.trackId = randomTrackId;
-    // res.status(200).json({newParcel});
+    /// res.status(200).json({newParcel});
   
     try {
       const savedParcel = await newParcel.save();
