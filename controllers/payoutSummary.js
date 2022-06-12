@@ -64,7 +64,7 @@ const createPayoutSummary = async (req, res, next) => {
     }
 
     
-  };
+};
 
 const updatePayoutSummary = async (req,res,next)=>{
   try {
@@ -95,7 +95,7 @@ const getPayoutSummary = async (req,res,next)=>{
   }
 }
 
-//all users
+//all
 const getPayoutSummaries = async (req,res,next)=>{
   try {
     const users = await PayoutSummary.find();
