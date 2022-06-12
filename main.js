@@ -13,6 +13,7 @@ const receivePackagesRoute = require("./routes/receivePackages");
 const packageSummaryRoute = require("./routes/packageSummaries");
 const payoutSummaryRoute = require("./routes/payoutSummaries");
 const orderRoute = require("./routes/orders");
+const walletRoute = require("./routes/wallets");
 
 
 //making our appln an object
@@ -35,6 +36,7 @@ app.use("/api/receivePackages", receivePackagesRoute);
 app.use("/api/packageSummaries", packageSummaryRoute);
 app.use("/api/payoutSummaries", payoutSummaryRoute);
 app.use("/api/orders", orderRoute);
+app.use("/api/wallets", walletRoute);
 
 
 //set port, mongoose db

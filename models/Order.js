@@ -59,6 +59,10 @@ const orderSchema = new mongoose.Schema(
     trackId: {
         type: String,
     },
+
+    riderId: {
+        type: String //rider id picked
+    },
     
     status:{
       type: String, default: "pending" //onTransit, completed, cancelled

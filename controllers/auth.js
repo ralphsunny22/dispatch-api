@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const User = require("../models/User");
 const createError = require("../utils/error");
 const jwt = require("jsonwebtoken");
+const Wallet = require("../models/Wallet");
 
 const register = async (req, res, next) => {
     try {
@@ -39,7 +40,16 @@ const login = async (req, res, next) => {
         { id: user._id, isAdmin: user.isAdmin }, //'id' will use to verifyUser Token later
         process.env.JWT_SECRET_KEY
       );
-    
+
+      const wallet = await Wallet.findOne({ userId: user._id });
+      if (!wallet) {
+        //create user wallet
+        const newWallet = new Wallet({
+          userId: user._id
+        });
+        await newWallet.save();
+      }
+      
       //excluding some returned values to client-side
       const { password, isAdmin, ...otherDetails } = user._doc;
     //   res.status(200).json({...otherDetails});

@@ -28,8 +28,23 @@ const userSchema = new mongoose.Schema(
     status:{
       type: Boolean, default: true
     },
-  
+
+    address: {
+        type: String,
+        required: true, //home address
+    },
+
+    transits:[String], //a driver can have multiple transits
+
+    isCompany: { type: Boolean, default: false }, //if under a company
+    company_name: {
+        type: String,
+        required: true, //company working for
+    },
+    isPrivate: { type: Boolean, default: true },
+    
     isAdmin: { type: Boolean, default: false },
+
   },
   { timestamps: true }
 );
