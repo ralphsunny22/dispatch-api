@@ -29,8 +29,26 @@ const userSchema = new mongoose.Schema(
       type: Boolean, default: true
     },
     
-    role: { type: String, default: "subscriber" }, //rider, admin
-    riderId: { type: String, default: "" },
+    role: { type: String, default: "subscriber" }, //admin
+    //riderId: { type: String, default: "" },
+    // rider: [
+    //   {
+    //     address: {
+    //         type: String,
+    //         required: true, //home address
+    //     },
+    
+    //     transits:[String], //a driver can have multiple transits
+    
+    //     isPrivate: { type: Boolean, default: true },
+    //     isCompany: { type: Boolean, default: false }, //if under a company
+    //     companyName: {
+    //         type: String,
+    //         default: ""
+    //     },
+        
+    //   },
+    // ],
 
     isAdmin: { type: Boolean, default: false },
   },

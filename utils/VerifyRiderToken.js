@@ -1,8 +1,8 @@
 const jwt = require("jsonwebtoken");
 const createError  = require("../utils/error.js");
 
-const verifyToken = (req, res, next) => {
-  const token = req.cookies.access_token;
+const verifyRiderToken = (req, res, next) => {
+  const token = req.cookies.rider_access_token;
   // return res.send({token});
   //if there's any token
   if (!token) {
@@ -10,24 +10,25 @@ const verifyToken = (req, res, next) => {
   }
 
   //verify token against user credentials
-  jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET_KEY, (err, rider) => {
     if (err) return next(createError(403, "Token is not valid!"));
+    // return res.send({rider});
     
     //add new 'user' key to req obj, to store the credentials(user)
-    req.userTokenInfo = user;
+    req.riderTokenInfo = rider;
     
     //move to next fxn
     next();
   });
 };
 
-const verifyUser = (req, res, next) => {
+const verifyRider = (req, res, next) => {
 
   //avoid 'next' so that other /routes/users fxn will nt run, since verifyToken() also has a next()
-  verifyToken(req, res, () => {
+  verifyRiderToken(req, res, () => {
     
     //check 'token user id' against param. OR check 'if token user isAdmin' is true
-    if (req.userTokenInfo.id === req.params.id || req.userTokenInfo.isAdmin) {
+    if (req.riderTokenInfo.id === req.params.id ) {
       next();
     } else {
       return next(createError(403, "You are not authorized3!"));
@@ -35,15 +36,15 @@ const verifyUser = (req, res, next) => {
   });
 };
 
-const verifyAdmin = (req, res, next) => {
-  verifyToken(req, res, () => {
-    //check 'if token user isAdmin' is true
-    if (req.userTokenInfo.isAdmin) {
-      next();
-    } else {
-      return next(createError(403, "You are not authorized2!"));
-    }
-  });
-};
+// const verifyAdmin = (req, res, next) => {
+//   verifyToken(req, res, () => {
+//     //check 'if token user isAdmin' is true
+//     if (req.userTokenInfo.isAdmin) {
+//       next();
+//     } else {
+//       return next(createError(403, "You are not authorized2!"));
+//     }
+//   });
+// };
 
-module.exports = { verifyToken, verifyUser, verifyAdmin }
+module.exports = { verifyRiderToken, verifyRider }

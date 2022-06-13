@@ -50,10 +50,10 @@ const transitSchema = new mongoose.Schema(
         type: String,
         required: true,
     },
-    riderId: {
-        type: String,
-        default: "",
-    },
+    // riderId: {
+    //     type: String,
+    //     default: "",
+    // },
     transitPic: {
       type: String,
       default: "",

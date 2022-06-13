@@ -9,6 +9,7 @@ const User = require("../models/User");
 const SendPackage = require("../models/SendPacakage");
 const Wallet = require("../models/Wallet");
 const Transaction = require("../models/Transaction");
+const Rider = require("../models/Rider");
 
 const createOrder = async (req, res, next) => {
     const userId = req.userTokenInfo.id;
@@ -135,6 +136,43 @@ const createOrder = async (req, res, next) => {
     
 };
 
+//assign rider to your placed order
+const assignRider_to_Order = async (req,res,next)=>{
+
+  const riderId = req.body.riderId
+  
+  const order = await Order.findById(req.params.id);
+
+  //check is rider is already assigned
+  if (order.riderId == riderId) return res.status(400).json({ error:"Rider will respond soon", success:false});
+
+  //check is abother rider is been assigned, when previous one is still active
+  if (order.isAssignedRider) return res.status(400).json({ error:"To assign another rider, tell the previone rider to cancel request", success:false});
+
+  //append to array
+  req.body.isAssignedRider = true
+
+  //update selected rider
+
+  try {
+    const updatedOrder = await Order.findByIdAndUpdate(
+      req.params.id,
+      
+      { $set: req.body },
+      { new: true }
+    );
+
+    const updatedRider = await Rider.findByIdAndUpdate(
+      riderId,
+      { isAvailableForOrder: false, pendingOrderId: order._id },
+    );
+
+    res.status(200).json(updatedOrder);
+  } catch (err) {
+    next(err);
+  }
+}
+
 const updateOrder = async (req,res,next)=>{
   try {
     const updatedOrder = await Order.findByIdAndUpdate(
@@ -164,14 +202,31 @@ const getOrder = async (req,res,next)=>{
   }
 }
 
+
 //all
-const getOrders = async (req,res,next)=>{
+const getUserOrders = async (req,res,next)=>{
+  const userId = req.userTokenInfo.id;
+    
+  const randomTrackId = req.cookies.track_id;
+  if (!randomTrackId) {
+      return next(createError(401, "You cannot continue!"));
+    }
   try {
-    const users = await Order.find();
-    res.status(200).json(users);
+    const orders = await Order.find({ userId: userId });
+    res.status(200).json(orders);
   } catch (err) {
     next(err);
   }
 }
 
-module.exports = { createOrder, updateOrder, deleteOrder, getOrder, getOrders }
+//all
+const getOrders = async (req,res,next)=>{
+  try {
+    const orders = await Order.find({ userId: userId });
+    res.status(200).json(orders);
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { createOrder, assignRider_to_Order, updateOrder, deleteOrder, getOrder, getUserOrders, getOrders }

@@ -60,8 +60,13 @@ const orderSchema = new mongoose.Schema(
         type: String,
     },
 
+    isAssignedRider: {
+        type: Boolean,
+        default: false
+    },
     riderId: {
-        type: String //rider id picked
+        type: String, //rider id picked
+        default:""
     },
     
     status:{
