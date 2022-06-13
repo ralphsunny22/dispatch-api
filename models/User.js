@@ -28,7 +28,10 @@ const userSchema = new mongoose.Schema(
     status:{
       type: Boolean, default: true
     },
-  
+    
+    role: { type: String, default: "subscriber" }, //rider, admin
+    riderId: { type: String, default: "" },
+
     isAdmin: { type: Boolean, default: false },
   },
   { timestamps: true }

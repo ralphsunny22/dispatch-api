@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 //model setup
-const userSchema = new mongoose.Schema(
+const transitSchema = new mongoose.Schema(
   {
     transitType: { 
       type: String, 
@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema(
     transitNumber: { 
         type: String, 
         required: true, //car number
+        unique: true
     },
     isTinted: { 
         type: Boolean, 
@@ -44,22 +45,28 @@ const userSchema = new mongoose.Schema(
         type: String,
         required: true,
     },
+    
     actualOwner: {
         type: String,
         required: true,
     },
     riderId: {
         type: String,
+        default: "",
     },
     transitPic: {
       type: String,
       default: "",
     },
 
+    created_by: {
+      type: String, //auth-user-id
+    },
+
     isCompany: { type: Boolean, default: false }, //if under a company
     company_name: {
         type: String,
-        required: true, //company working for
+        default: "",
     },
     isPrivate: { type: Boolean, default: true },
     status:{
@@ -70,7 +77,7 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const User = mongoose.model("User", userSchema);
-module.exports = User;
-// const _User = User;
-// export { _User as User };
+const Transit = mongoose.model("Transit", transitSchema);
+module.exports = Transit;
+// const _Transit = Transit;
+// export { _Transit as Transit };
