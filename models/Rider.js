@@ -52,9 +52,29 @@ const riderSchema = new mongoose.Schema(
       type: String, //from orders table
       default: ""
     },
-    ////////////////////
-    completedOrders: [String],
-    cancelledOrders: [String],
+    /////////////////////
+    hasAcceptedOrder: { type: Boolean, default: false }, //true
+    acceptedOrderId: {
+      type: String, //from pendingOrderId
+      default: ""
+    },
+
+    enroutePickUp: { type: Boolean, default: false }, //true
+    enrouteDropOff: { type: Boolean, default: false }, //true
+
+    completedOrders: [{ orderId: String,
+                        from: String,
+                        to: String,
+                        client: [{ name: String, email: String, phone: String, remarks: { type: String, default: "" } }],
+                        isInsured: false,
+                        tripMode: String,
+                        payment: [{ method: String, isPaid: false, amount: Number }]
+                       }],
+    //cancelledOrders: [String],
+
+    hasCancelledOrder: { type: Boolean, default: false }, //true
+    cancelledOrders: [{ orderId: String, status: {type: String, default: "pending"},
+                        reason: [{ client: {type: String, default: ""}, rider: {type: String, default: ""} }] }],
 
     isCompany: { type: Boolean, default: false }, //if under a company
     company_name: {

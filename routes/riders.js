@@ -3,7 +3,11 @@ const {
   createRider,
   loginRider,
   cancelOrder,
+  acceptOrder,
+  enroutePickUp, enrouteDropOff, completeOrder,
   assignTransits_to_Rider,
+  switchTransit,
+  removeTransit,
   updateRider,
   deleteRider,
   getRider,
@@ -23,8 +27,27 @@ router.post("/login", loginRider);
 //CANCEL ORDER
 router.get("/cancelOrder/:id", verifyRiderToken, cancelOrder);
 
+//ACCEPT ORDER
+router.get("/acceptOrder/:id", verifyRiderToken, acceptOrder);
+
+//enroute PickUp, on the way to pick-up order
+router.get("/enroutePickUp/:id", verifyRiderToken, enroutePickUp);
+
+//enroute DropOff
+router.get("/enrouteDropOff/:id", verifyRiderToken, enrouteDropOff);
+
+//complete Order,
+router.get("/completeOrder/:id", verifyRiderToken, completeOrder);
+
 //ASSIGN TRANSITS
-router.post("/assignTransits", assignTransits_to_Rider);
+router.post("/assignTransits/:id", assignTransits_to_Rider);
+
+//switch transit from rider's existing ones
+router.get("/switchTransit/:id/:transitId", switchTransit);
+
+//remove transit from rider
+router.get("/removeTransit/:id/:transitId", removeTransit);
+
 
 //UPDATE
 router.put("/:id", verifyAdmin, updateRider);

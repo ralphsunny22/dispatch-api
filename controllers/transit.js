@@ -1,3 +1,4 @@
+const Rider = require("../models/Rider");
 const Transit = require("../models/Transit");
 const createError = require("../utils/error");
 
@@ -21,7 +22,64 @@ const createTransit = async (req, res, next) => {
     } catch (err) {
       next(err);
     }
-  };
+};
+
+//remover transit from rider to another
+const transferTransit = async (req,res,next)=>{
+  const fromRider = await Rider.findById( req.params.fromRiderId );
+  if (!fromRider) return res.status(404).json({ error: "Rider does not exist" });
+
+  const toRider = await Rider.findById( req.params.toRiderId );
+  if (!toRider) return res.status(404).json({ error: "Rider you're transferring to, does not exist" });
+  
+  const fromRider_existing_transits = fromRider.allocatedTransits.length ? true : false; //single dimension
+  //return res.send({fromRider_existing_transits})
+  if (!fromRider_existing_transits) return res.status(500).json({ error: "Bad Request" })
+   
+  //transitId to be transferred
+  const transitId = req.params.id;
+
+  const toRider_existing_transits_index = toRider.allocatedTransits ?? toRider.allocatedTransits.indexOf(transitId) >= 0; //arr1
+  if (toRider_existing_transits_index === true) return res.status(404).json({ error: "Receiver already has this transit" })
+  
+  //check if transitId is fromRider currentTransit
+  const fromRider_currentTransit = fromRider.currentTransit == transitId ? "" : fromRider.currentTransit;
+  const fromRider_currentTransit_type = fromRider_currentTransit == "" ? "" : fromRider.currentTransit_type;
+  
+  const transit = await Transit.findById( transitId );
+  if (!transit) return res.status(404).json({ error: "Transit does not exist" });
+
+try {
+  const updated_fromRider = await Rider.findByIdAndUpdate( req.params.fromRiderId, { 
+      $pull: { allocatedTransits: transitId },
+      currentTransit: fromRider_currentTransit,
+      currentTransit_type: fromRider_currentTransit_type
+  },
+  //   { $set: req.body },
+  { new: true }
+  );
+
+  const updated_toRider = await Rider.findByIdAndUpdate( req.params.toRiderId, { 
+      $push: { allocatedTransits: transitId },
+  },
+  //   { $set: req.body },
+  { new: true }
+  );
+
+  //update transit
+  await Transit.findByIdAndUpdate( req.params.transitId, { 
+      isCurrentlyInUse: req.params.fromRiderId == transit.riderId ?? false,
+      riderId: req.params.fromRiderId == transit.riderId ?? "",
+      isAssignedToRider: false
+  },
+  //   { $set: req.body },
+  { new: true }
+  );
+  res.status(200).json({ fromRider: updated_fromRider, toRider: updated_toRider, message: "Transit transferred successfully", success: true });
+} catch (err) {
+  next(err);
+}
+}
 
 const updateTransit = async (req,res,next)=>{
   try {
@@ -62,4 +120,4 @@ const getTransits = async (req,res,next)=>{
   }
 }
 
-module.exports = { createTransit, updateTransit, deleteTransit, getTransit, getTransits }
+module.exports = { createTransit, transferTransit, updateTransit, deleteTransit, getTransit, getTransits }

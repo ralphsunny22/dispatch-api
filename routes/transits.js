@@ -1,6 +1,7 @@
 const express = require("express");
 const {
   createTransit,
+  transferTransit,
   updateTransit,
   deleteTransit,
   getTransit,
@@ -12,6 +13,9 @@ const router = express.Router();
 
 //CREATE
 router.post("/", verifyToken, createTransit);
+
+//transfer transit from rider to another
+router.get("/transfer/:id/:fromRiderId/:toRiderId", transferTransit);
 
 //UPDATE
 router.put("/:id", verifyAdmin, updateTransit);

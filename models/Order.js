@@ -68,7 +68,24 @@ const orderSchema = new mongoose.Schema(
         type: String, //rider id picked
         default:""
     },
-    
+    riderAccepted: {
+        type: Boolean,
+        default: false //after rider clicks on accept
+    },
+    riderOnPickUp: {
+        type: Boolean,
+        default: false //after rider clicks on accept
+    },
+    riderOnDropOff: {
+        type: Boolean,
+        default: false //after rider clicks on accept
+    },
+
+    riderCompleted: {
+        type: Boolean,
+        default: false //after rider clicks on complete i.e final btn
+    },
+
     status:{
       type: String, default: "pending" //onTransit, completed, cancelled
     },

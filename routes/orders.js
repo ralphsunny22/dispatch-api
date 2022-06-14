@@ -25,7 +25,7 @@ router.put("/:id", verifyAdmin, updateOrder);
 router.delete("/:id", verifyAdmin, deleteOrder);
 
 //GET
-router.get("/:id", verifyAdmin, getOrder);
+router.get("/:id", verifyToken, getOrder);
 
 //GET ALL USER Orders
 router.get("/find/myOrders", verifyToken, getUserOrders);
